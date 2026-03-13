@@ -18,13 +18,36 @@ public class Empleado {
     private double salario;
     private String idEmpleado;
     
-    public Empleado(String nombre, String cedula, LocalDate fechaDeIngreso, double salario, String idEmpleado) {
+    public Empleado(String nombre) {
         this.nombre = nombre;
-        this.fechaDeIngreso = fechaDeIngreso;
-        this.cedula = cedula;
-        this.idEmpleado = idEmpleado;
-        this.salario = salario;       
-        
     }
+    
+    public Empleado(String nombre, String cedula, LocalDate fechaDeIngreso, double salario, String idEmpleado) {
+        this.nombre = nombre; 
+        this.cedula = cedula;
+        this.fechaDeIngreso = fechaDeIngreso;
+        this.salario = salario;
+        this.idEmpleado = idEmpleado;
+   }
+    
+   public String getNombre() {
+       return nombre;
+   }
+   
+   public String getCedula(){
+       return cedula;
+   }
+   
+   public LocalDate getFechaDeIngreso(){
+       return fechaDeIngreso;
+   }
+   
+   public double getSalario() {
+       return salario;
+   }
+   
+   public String getIdEmpleado() {
+       return idEmpleado;
+   }
        
 }

@@ -5,13 +5,18 @@
 
 package com.mycompany.mavenproject1;
 
+import com.mycompany.mavenproject1.modelo.Empleado;
+
+import java.time.LocalDate;
+
 /**
  *
  * @author USUARIO
  */
 public class Mavenproject1 {
 
-    public static void main(String[] args) {
-        System.out.println("Mi primer push desde Netbeans");
+    public static void main(String[] args) {  
+        Empleado myEmp = new Empleado("Marios","1983434",LocalDate.parse("2000-05-15"),12.000,"1898");
+        System.out.println("El constructor es " + myEmp.getSalario());
     }
 }
