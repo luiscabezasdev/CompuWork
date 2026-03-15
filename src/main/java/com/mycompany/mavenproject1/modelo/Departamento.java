@@ -11,14 +11,19 @@ package com.mycompany.mavenproject1.modelo;
 public class Departamento {
     
     private String nombre;
-    private String ubicacion;
+    private String descripcion;
+    private Double presupuestoasignado;
+    private int iddepartamento;
+    
 
     public Departamento() {
     }
 
-    public Departamento(String nombre, String ubicacion) {
+    public Departamento(String nombre, String descripcion, double presupuestoasignado, int iddepartamento) {
         this.nombre = nombre;
-        this.ubicacion = ubicacion;
+        this.descripcion = descripcion;
+        this.presupuestoasignado = presupuestoasignado;
+        this.iddepartamento =iddepartamento;
     }
 
     public String getNombre() {
@@ -29,11 +34,28 @@ public class Departamento {
         this.nombre = nombre;
     }
 
-    public String getUbicacion() {
-        return ubicacion;
+    public String getdescripcion() {
+        return descripcion;
     }
 
-    public void setUbicacion(String ubicacion) {
-        this.ubicacion = ubicacion;
+    public void setdescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
+
+    public double getpresupuestoasignado() {
+        return presupuestoasignado;
+    }
+
+    public void setpresupuestoasignado(double presupuestoasignado) {
+        this.presupuestoasignado = presupuestoasignado;
+    }
+    
+    public int getiddepartamento() {
+        return iddepartamento;
+    }
+
+    public void setiddepartamento(int iddepartamento) {
+        this.iddepartamento = iddepartamento;
+    }
+
 }
