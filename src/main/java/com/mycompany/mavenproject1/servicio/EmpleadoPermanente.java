@@ -3,11 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.mavenproject1.servicio;
+package com.mycompany.mavenproject1.modelo.Empleado;
 
 /**
  *
  * @author USUARIO
  */
-public class EmpleadoPermanente {
+public class EmpleadoPermanente extends Empleado {
     
 }
