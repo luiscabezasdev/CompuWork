@@ -30,9 +30,18 @@ public class Mavenproject1 {
         }
         while ((elegirTipodeEmpleado != 1) && (elegirTipodeEmpleado != 2));
         
-       System.out.println("Has introducido el nùmero " + elegirTipodeEmpleado);
+        System.out.println("Has introducido el nùmero " + elegirTipodeEmpleado);
        
-       
+        Empleado tipodeEmpleado;
+        
+        if (elegirTipodeEmpleado == 1) {
+            tipodeEmpleado = new EmpleadoPermanente("Pedro", "198923", LocalDate.of(2025, 5, 23), 12.800, "2342343", 100);
+        } else {
+            tipodeEmpleado = new EmpleadoTemporal("Juan", "678243", LocalDate.of(2025, 3, 18), 13456, "1098944", 14, 300);
+        }
+
+        System.out.println("Has introducido el nùmero " + elegirTipodeEmpleado +" " + tipodeEmpleado.getCedula());
+        
        
 //        EmpleadoPermanente empleado1 = new EmpleadoPermanente();
 //        EmpleadoTemporal empleado2 = new EmpleadoTemporal();
