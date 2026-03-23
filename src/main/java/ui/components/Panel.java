@@ -16,7 +16,7 @@ import javax.swing.JPanel;
  */
 public class Panel extends JPanel {
     private int borderRadius = 20;
-    private Color bgColor = new Color(230, 230, 250); // Lavanda suave
+    private Color bgColor = new Color(230, 230, 250); 
     
     public Panel() {
         setOpaque(false);
@@ -50,10 +50,10 @@ public class Panel extends JPanel {
         g2.setColor(bgColor);
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), borderRadius, borderRadius);
         
-        g2.setColor(new Color(255, 255, 255, 150)); // Luz arriba-izquierda
+        g2.setColor(new Color(255, 255, 255, 150)); 
         g2.fillRoundRect(0, 0, getWidth(), getHeight() / 2, borderRadius, borderRadius);
         
-        g2.setColor(new Color(0, 0, 0, 30)); // Sombra abajo-derecha
+        g2.setColor(new Color(0, 0, 0, 30)); 
         g2.fillRoundRect(0, getHeight() / 2, getWidth(), getHeight() / 2, borderRadius, borderRadius);
         
         g2.setColor(new Color(200, 200, 220));

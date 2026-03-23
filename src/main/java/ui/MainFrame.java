@@ -5,7 +5,7 @@
 package ui;
 
 import ui.components.Sidebar;
-import ui.components.panels.GestionEmpleadosPanel;  // ✅ Tu panel existente
+import ui.components.panels.GestionEmpleadosPanel;  
 import javax.swing.JFrame;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -19,20 +19,20 @@ public class MainFrame extends JFrame {
     
     public MainFrame() {
         setTitle("CompuWork Management Console");
-        setSize(1400, 850);  // ✅ Un poco más ancho para el sidebar
+        setSize(1400, 850);  
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         
-        // ✅ Panel principal con BorderLayout
+        
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(new Color(248, 250, 252));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         
-        // ✅ Agregar Sidebar (NUEVO - no afecta tu lógica)
+        
         Sidebar sidebar = new Sidebar();
         mainPanel.add(sidebar, BorderLayout.WEST);
         
-        // ✅ Tu panel existente SIN MODIFICAR
+        
         GestionEmpleadosPanel panelEmpleados = new GestionEmpleadosPanel();
         panelEmpleados.setBackground(new Color(248, 250, 252));
         mainPanel.add(panelEmpleados, BorderLayout.CENTER);

@@ -80,7 +80,6 @@ public class Sidebar extends JPanel {
         gbc.gridy = 7;
         add(btnLogout, gbc);
         
-        // Seleccionar Empleados por defecto
         selectButton(btnEmpleados);
     }
     
@@ -96,7 +95,7 @@ public class Sidebar extends JPanel {
         label.setForeground(new Color(71, 85, 105));
         panel.add(label);
         
-        // Efecto hover
+       
         panel.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 if (!panel.getBackground().equals(new Color(239, 246, 255))) {
@@ -114,13 +113,13 @@ public class Sidebar extends JPanel {
     }
     
     private void selectButton(JPanel button) {
-        // Reset todos
+        
         btnDashboard.setBackground(Color.WHITE);
         btnEmpleados.setBackground(Color.WHITE);
         btnDepartamentos.setBackground(Color.WHITE);
         btnReportes.setBackground(Color.WHITE);
         
-        // Seleccionar actual
+        
         button.setBackground(new Color(239, 246, 255));
     } 
     
