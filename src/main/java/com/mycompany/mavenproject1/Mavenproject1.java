@@ -18,7 +18,7 @@ public class Mavenproject1 {
     
     
     public static void main(String[] args) { 
-        // ✅ OPCIONAL: Puedes usar la consola O la GUI
+        
         
         System.out.println("=== CompuWork ===");
         System.out.println("1. Usar Consola");
@@ -29,10 +29,10 @@ public class Mavenproject1 {
             int opcion = sc.nextInt();
             
             if (opcion == 1) {
-                // Tu lógica original de consola
+                
                 usarConsola(sc);
             } else {
-                // Abrir GUI
+                
                 usarGUI();
             }
         }
