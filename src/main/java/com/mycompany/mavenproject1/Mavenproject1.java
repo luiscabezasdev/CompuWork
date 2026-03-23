@@ -6,11 +6,8 @@
 package com.mycompany.mavenproject1;
 
 import com.mycompany.mavenproject1.modelo.Empleado;
-import com.mycompany.mavenproject1.servicio.EmpleadoPermanente;
-import com.mycompany.mavenproject1.servicio.EmpleadoTemporal;
-        
+import com.mycompany.mavenproject1.servicio.EmpleadoService;
 import java.util.Scanner;
-
 import java.time.LocalDate;
 
 /**
@@ -21,43 +18,63 @@ public class Mavenproject1 {
     
     
     public static void main(String[] args) { 
-       Scanner sc = new Scanner(System.in);  
-       int elegirTipodeEmpleado;
+        // ✅ OPCIONAL: Puedes usar la consola O la GUI
+        
+        System.out.println("=== CompuWork ===");
+        System.out.println("1. Usar Consola");
+        System.out.println("2. Usar Interfaz Gráfica");
+        System.out.print("Elige: ");
+        
+        try (Scanner sc = new Scanner(System.in)) {
+            int opcion = sc.nextInt();
+            
+            if (opcion == 1) {
+                // Tu lógica original de consola
+                usarConsola(sc);
+            } else {
+                // Abrir GUI
+                usarGUI();
+            }
+        }
+    }
+    
+    private static void usarConsola(Scanner sc) {
+        EmpleadoService service = new EmpleadoService();
+        int elegirTipodeEmpleado;
         
         do {   
-        System.out.print("Elige el tipo de empleado \n El número 1 para Empleado Permanente \n El número 2 para empleado Temporal \n Ingresa aquí: ");
-         elegirTipodeEmpleado = sc.nextInt();    
-        }
-        while ((elegirTipodeEmpleado != 1) && (elegirTipodeEmpleado != 2));
+            System.out.print("Elige el tipo de empleado \n" +
+                           "El número 1 para Empleado Permanente \n" +
+                           "El número 2 para empleado Temporal \n" +
+                           "Ingresa aquí: ");
+            elegirTipodeEmpleado = sc.nextInt();    
+        } while ((elegirTipodeEmpleado != 1) && (elegirTipodeEmpleado != 2));
         
-        System.out.println("Has introducido el nùmero " + elegirTipodeEmpleado);
+        System.out.println("Has introducido el número " + elegirTipodeEmpleado);
        
         Empleado tipodeEmpleado;
         
         if (elegirTipodeEmpleado == 1) {
-            tipodeEmpleado = new EmpleadoPermanente("Pedro", "198923", LocalDate.of(2025, 5, 23), 12.800, "2342343", 100);
+            tipodeEmpleado = service.crearEmpleado(
+                "Pedro", "198923", 1, 12800, 0, 0
+            );
         } else {
-            tipodeEmpleado = new EmpleadoTemporal("Juan", "678243", LocalDate.of(2025, 3, 18), 13456, "1098944", 14, 300);
+            tipodeEmpleado = service.crearEmpleado(
+                "Juan", "678243", 2, 0, 14, 300
+            );
         }
 
-        System.out.println("Has introducido el nùmero " + elegirTipodeEmpleado +" " + tipodeEmpleado.getCedula());
-        
-       
-//        EmpleadoPermanente empleado1 = new EmpleadoPermanente();
-//        EmpleadoTemporal empleado2 = new EmpleadoTemporal();
-//        
-//        
-//        public int respuesta()
-//        if (elegirTipodeEmpleado == 1) {
-//            EmpleadoPermanente empleado1 = new EmpleadoPermanente();
-//        } else {
-//            EmpleadoTemporal empleado2 = new EmpleadoTemporal();
-//        }
-//        
-//       
-//        System.out.println("la opcion ingresada es " + elegirTipodeEmpleado);
+        System.out.println("Has introducido el número " + 
+                          elegirTipodeEmpleado + " " + 
+                          tipodeEmpleado.getCedula());
+        System.out.println("Total empleados: " + service.getCantidad());
+    }
+    
+    private static void usarGUI() {
+        ui.MainFrame.main(new String[]{});
     }
         
-    
         
-}
+    }
+ 
+      
