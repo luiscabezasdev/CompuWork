@@ -15,19 +15,19 @@ import java.util.List;
  * @author USUARIO
  */
 public class EmpleadoService {
-     // ✅ ArrayList para almacenar empleados
+     
     private List<Empleado> listaEmpleados;
     
     public EmpleadoService() {
         this.listaEmpleados = new ArrayList<>();
     }
     
-    // ✅ Método para crear empleado (integra tu lógica original)
+    
     public Empleado crearEmpleado(String nombre, String cedula, int tipo, 
                                   double salario, int horas, double valorHora) {
         Empleado empleado;
         
-        if (tipo == 1) { // Permanente
+        if (tipo == 1) { 
             empleado = new EmpleadoPermanente(
                 nombre, 
                 cedula, 
@@ -37,7 +37,7 @@ public class EmpleadoService {
                 "SS-" + cedula, 
                 100
             );
-        } else { // Temporal
+        } else { 
             empleado = new EmpleadoTemporal(
                 nombre, 
                 cedula, 
@@ -49,21 +49,21 @@ public class EmpleadoService {
             );
         }
         
-        listaEmpleados.add(empleado); // ✅ Guardar en ArrayList
+        listaEmpleados.add(empleado); 
         return empleado;
     }
     
-    // ✅ Obtener todos los empleados
+    
     public List<Empleado> obtenerTodos() {
         return listaEmpleados;
     }
     
-    // ✅ Obtener cantidad
+    
     public int getCantidad() {
         return listaEmpleados.size();
     }
     
-    // ✅ Buscar por cédula
+    
     public Empleado buscarPorCedula(String cedula) {
         for (Empleado emp : listaEmpleados) {
             if (emp.getCedula().equals(cedula)) {
@@ -73,7 +73,7 @@ public class EmpleadoService {
         return null;
     }
     
-    // ✅ Eliminar empleado
+    
     public boolean eliminar(String cedula) {
         return listaEmpleados.removeIf(emp -> emp.getCedula().equals(cedula));
     }   

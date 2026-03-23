@@ -19,7 +19,7 @@ import javax.swing.JPanel;
  * @author USUARIO
  */
 public class Sidebar extends JPanel {
-   private JPanel btnDashboard;
+    private JPanel btnDashboard;
     private JPanel btnEmpleados;
     private JPanel btnDepartamentos;
     private JPanel btnReportes;
@@ -37,7 +37,7 @@ public class Sidebar extends JPanel {
         // Logo
         gbc.gridy = 0;
         gbc.insets = new Insets(30, 20, 30, 20);
-        JLabel lblLogo = new JLabel("🏢 CompuWork");
+        JLabel lblLogo = new JLabel("COMPUWORK");
         lblLogo.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblLogo.setForeground(new Color(15, 23, 42));
         add(lblLogo, gbc);
@@ -45,19 +45,19 @@ public class Sidebar extends JPanel {
         // Menú
         gbc.insets = new Insets(5, 10, 5, 10);
         
-        btnDashboard = createMenuItem("📊 Dashboard");
+        btnDashboard = createMenuItem("Dashboard");
         gbc.gridy = 1;
         add(btnDashboard, gbc);
         
-        btnEmpleados = createMenuItem("👥 Empleados");
+        btnEmpleados = createMenuItem("Empleados");
         gbc.gridy = 2;
         add(btnEmpleados, gbc);
         
-        btnDepartamentos = createMenuItem("🏢 Departamentos");
+        btnDepartamentos = createMenuItem("Departamentos");
         gbc.gridy = 3;
         add(btnDepartamentos, gbc);
         
-        btnReportes = createMenuItem("📈 Reportes");
+        btnReportes = createMenuItem("Reportes");
         gbc.gridy = 4;
         add(btnReportes, gbc);
         
@@ -72,11 +72,11 @@ public class Sidebar extends JPanel {
         // Settings y Logout
         gbc.insets = new Insets(5, 10, 5, 10);
         
-        JPanel btnSettings = createMenuItem("⚙️ Configuración");
+        JPanel btnSettings = createMenuItem("Configuración");
         gbc.gridy = 6;
         add(btnSettings, gbc);
         
-        JPanel btnLogout = createMenuItem("🚪 Cerrar Sesión");
+        JPanel btnLogout = createMenuItem("Cerrar Sesión");
         gbc.gridy = 7;
         add(btnLogout, gbc);
         

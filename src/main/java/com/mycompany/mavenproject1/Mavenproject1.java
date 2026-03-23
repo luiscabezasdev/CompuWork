@@ -8,7 +8,6 @@ package com.mycompany.mavenproject1;
 import com.mycompany.mavenproject1.modelo.Empleado;
 import com.mycompany.mavenproject1.servicio.EmpleadoService;
 import java.util.Scanner;
-import java.time.LocalDate;
 
 /**
  *
