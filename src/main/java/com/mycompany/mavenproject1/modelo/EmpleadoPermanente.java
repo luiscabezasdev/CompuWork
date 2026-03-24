@@ -1,37 +1,51 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.mavenproject1.modelo;
-import com.mycompany.mavenproject1.modelo.Empleado;
+
+import com.mycompany.mavenproject1.excepcion.ValidacionException;
 import java.time.LocalDate;
 
-/**
- *
- * @author USUARIO
- */
 public class EmpleadoPermanente extends Empleado {
+    private double salarioBase;
     private double bono;
 
-    public EmpleadoPermanente(String nombre, String cedula, LocalDate fechaDeIngreso, double salario, String idEmpleado, double bono) {
-        super(nombre, cedula, fechaDeIngreso, salario, idEmpleado);
+    public EmpleadoPermanente(
+            String idEmpleado,
+            String nombre,
+            String cedula,
+            LocalDate fechaIngreso,
+            double salarioBase,
+            double bono) {
+        super(idEmpleado, nombre, cedula, fechaIngreso);
+        actualizarCompensacion(salarioBase, bono);
+    }
+
+    public final void actualizarCompensacion(double salarioBase, double bono) {
+        validarNoNegativo(salarioBase, "El salario base no puede ser negativo.");
+        validarNoNegativo(bono, "El bono no puede ser negativo.");
+        this.salarioBase = salarioBase;
         this.bono = bono;
     }
 
-    public EmpleadoPermanente(String nombre, String cedula, LocalDate now, double salario, String string, String string0, int i) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    @Override
+    public double calcularPago() {
+        return salarioBase + bono;
     }
-    
+
+    @Override
+    public TipoEmpleado getTipoEmpleado() {
+        return TipoEmpleado.PERMANENTE;
+    }
+
+    public double getSalarioBase() {
+        return salarioBase;
+    }
+
     public double getBono() {
         return bono;
     }
-    
-    public void setBono(double bono) {
-        this.bono = bono;
-    }
 
-    public String getSalarioBase() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private void validarNoNegativo(double value, String message) {
+        if (value < 0) {
+            throw new ValidacionException(message);
+        }
     }
-  
 }

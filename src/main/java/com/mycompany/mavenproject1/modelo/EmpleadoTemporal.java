@@ -1,39 +1,49 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.mavenproject1.modelo;
-import com.mycompany.mavenproject1.modelo.Empleado; 
-import java.time.LocalDate;
-     
-/**
- *
- * @author USUARIO
- */
-public class EmpleadoTemporal extends Empleado{
-   private int horasTrabajadas;
-   private double valorHora;
 
-    public EmpleadoTemporal(String nombre, String cedula, LocalDate fechaDeIngreso, double salario, String idEmpleado, int horasTrabajadas, double valorHora) {
-        super(nombre, cedula, fechaDeIngreso, salario, idEmpleado);
+import com.mycompany.mavenproject1.excepcion.ValidacionException;
+import java.time.LocalDate;
+
+public class EmpleadoTemporal extends Empleado {
+    private int horasTrabajadas;
+    private double valorHora;
+
+    public EmpleadoTemporal(
+            String idEmpleado,
+            String nombre,
+            String cedula,
+            LocalDate fechaIngreso,
+            int horasTrabajadas,
+            double valorHora) {
+        super(idEmpleado, nombre, cedula, fechaIngreso);
+        actualizarCondiciones(horasTrabajadas, valorHora);
+    }
+
+    public final void actualizarCondiciones(int horasTrabajadas, double valorHora) {
+        if (horasTrabajadas <= 0) {
+            throw new ValidacionException("Las horas trabajadas deben ser mayores que cero.");
+        }
+        if (valorHora < 0) {
+            throw new ValidacionException("El valor por hora no puede ser negativo.");
+        }
         this.horasTrabajadas = horasTrabajadas;
         this.valorHora = valorHora;
     }
-    
+
+    @Override
+    public double calcularPago() {
+        return horasTrabajadas * valorHora;
+    }
+
+    @Override
+    public TipoEmpleado getTipoEmpleado() {
+        return TipoEmpleado.TEMPORAL;
+    }
+
     public int getHorasTrabajadas() {
         return horasTrabajadas;
     }
-    
+
     public double getValorHora() {
         return valorHora;
     }
-    
-    public void setHorasTrabajadas(int horasTrabajadas){
-        this.horasTrabajadas = horasTrabajadas;
-    }
-    
-    public void setValorHora(double valorHora) {
-        this.valorHora = valorHora;
-    }
-      
 }

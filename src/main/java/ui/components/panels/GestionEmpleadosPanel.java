@@ -1,311 +1,406 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package ui.components.panels;
 
-
+import com.mycompany.mavenproject1.modelo.Departamento;
 import com.mycompany.mavenproject1.modelo.Empleado;
 import com.mycompany.mavenproject1.modelo.EmpleadoPermanente;
 import com.mycompany.mavenproject1.modelo.EmpleadoTemporal;
-
+import com.mycompany.mavenproject1.modelo.TipoEmpleado;
+import com.mycompany.mavenproject1.servicio.DepartamentoService;
 import com.mycompany.mavenproject1.servicio.EmpleadoService;
-
-import ui.components.Button;
-import ui.components.ModernTextField;
-import ui.components.Panel;
-import ui.components.ModernCard;
-
-
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.SwingConstants;                    
-import javax.swing.table.DefaultTableCellRenderer;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
-import javax.swing.ButtonGroup;
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-/**
- *
- * @author USUARIO
- */
-public class GestionEmpleadosPanel extends ModernCard{
-   // ✅ Componentes UI
+import ui.components.Button;
+import ui.components.ModernCard;
+import ui.components.ModernTextField;
+
+public class GestionEmpleadosPanel extends ModernCard implements RefreshablePanel {
+    private final EmpleadoService empleadoService;
+    private final DepartamentoService departamentoService;
+    private final Runnable refreshCallback;
+
     private ModernTextField txtNombre;
     private ModernTextField txtCedula;
-    private ModernTextField txtSalario;
+    private ModernTextField txtFechaIngreso;
+    private ModernTextField txtSalarioBase;
+    private ModernTextField txtBono;
     private ModernTextField txtHoras;
-    private JRadioButton rbPermanente;
-    private JRadioButton rbTemporal;
+    private ModernTextField txtValorHora;
+    private JComboBox<TipoEmpleado> cmbTipoEmpleado;
+    private JComboBox<Object> cmbDepartamento;
     private JTable tableEmpleados;
     private DefaultTableModel tableModel;
-    private JLabel lblTituloTabla;
-    
-    // ✅ TU SERVICIO (ArrayList integrado)
-    private EmpleadoService empleadoService;
-    
-    public GestionEmpleadosPanel() {
-        // ✅ Inicializar servicio
-        this.empleadoService = new EmpleadoService();
-        
-        setLayout(new GridBagLayout());
-        setBackground(new Color(255, 255, 255));
-        
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(12, 20, 12, 20);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        
-        // === HEADER ===
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-        JLabel lblTitle = new JLabel("Registar Empleado");
-        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
+    private JLabel lblResumen;
+    private String empleadoSeleccionadoId;
+
+    public GestionEmpleadosPanel(
+            EmpleadoService empleadoService,
+            DepartamentoService departamentoService,
+            Runnable refreshCallback) {
+        this.empleadoService = empleadoService;
+        this.departamentoService = departamentoService;
+        this.refreshCallback = refreshCallback;
+        this.empleadoSeleccionadoId = null;
+
+        setLayout(new BorderLayout(0, 18));
+        setBackground(Color.WHITE);
+        setBorderRadius(18);
+
+        add(buildHeader(), BorderLayout.NORTH);
+        add(buildContent(), BorderLayout.CENTER);
+        refreshData();
+    }
+
+    private JPanel buildHeader() {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setOpaque(false);
+
+        JLabel lblTitle = new JLabel("Gestion de Empleados");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblTitle.setForeground(new Color(15, 23, 42));
-        add(lblTitle, gbc);
-        
-        // === TIPO DE EMPLEADO ===
-        gbc.gridwidth = 1; gbc.gridy = 1;
-        JLabel lblTipoTitulo = new JLabel("Tipo de Empleado");
-        lblTipoTitulo.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblTipoTitulo.setForeground(new Color(100, 116, 139));
-        add(lblTipoTitulo, gbc);
-        
-        gbc.gridx = 1;
-        Panel panelTipo = new Panel();
-        panelTipo.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 5));
-        panelTipo.setBgColor(new Color(241, 245, 249));
-        panelTipo.setPreferredSize(new java.awt.Dimension(250, 40));
-        
-        rbPermanente = new JRadioButton("Permanente");
-        rbTemporal = new JRadioButton("Temporal");
-        rbPermanente.setBackground(new Color(241, 245, 249));
-        rbTemporal.setBackground(new Color(241, 245, 249));
-        rbPermanente.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        rbTemporal.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        
-        ButtonGroup grupo = new ButtonGroup();
-        grupo.add(rbPermanente);
-        grupo.add(rbTemporal);
-        rbPermanente.setSelected(true);
-        
-        panelTipo.add(rbPermanente);
-        panelTipo.add(rbTemporal);
-        add(panelTipo, gbc);
-        
-        // === NOMBRE ===
-        gbc.gridx = 0; gbc.gridy = 2;
-        JLabel lblNombre = new JLabel("NOMBRE COMPLETO");
-        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblNombre.setForeground(new Color(100, 116, 139));
-        add(lblNombre, gbc);
-        
-        gbc.gridx = 1;
-        txtNombre = new ModernTextField("Pedro Suarez");
-        add(txtNombre, gbc);
-        
-        // === CÉDULA ===
-        gbc.gridx = 0; gbc.gridy = 3;
-        JLabel lblCedula = new JLabel("CEDULA");
-        lblCedula.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblCedula.setForeground(new Color(100, 116, 139));
-        add(lblCedula, gbc);
-        
-        gbc.gridx = 1;
-        txtCedula = new ModernTextField("1098923123");
-        add(txtCedula, gbc);
-        
-        // === SALARIO ===
-        gbc.gridx = 0; gbc.gridy = 4;
-        JLabel lblSalario = new JLabel("SALARIO MENSUAL");
-        lblSalario.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblSalario.setForeground(new Color(100, 116, 139));
-        add(lblSalario, gbc);
-        
-        gbc.gridx = 1;
-        txtSalario = new ModernTextField("1.750.000");
-        add(txtSalario, gbc);
-        
-        // === HORAS ===
-        gbc.gridx = 0; gbc.gridy = 5;
-        JLabel lblHoras = new JLabel("HORAS TRABAJADAS");
-        lblHoras.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblHoras.setForeground(new Color(100, 116, 139));
-        add(lblHoras, gbc);
-        
-        gbc.gridx = 1;
-        txtHoras = new ModernTextField("25");
-        add(txtHoras, gbc);
-        
-        // === BOTONES ===
-        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(25, 20, 20, 20);
-        
-        javax.swing.JPanel buttonPanel = new javax.swing.JPanel(
-            new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 15, 0));
-        buttonPanel.setOpaque(false);
-        
-        Button btnLimpiar = new Button("LIMPIAR", false);
+
+        lblResumen = new JLabel("0 empleados registrados");
+        lblResumen.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblResumen.setForeground(new Color(100, 116, 139));
+
+        header.add(lblTitle, BorderLayout.NORTH);
+        header.add(lblResumen, BorderLayout.SOUTH);
+        return header;
+    }
+
+    private JPanel buildContent() {
+        JPanel content = new JPanel(new BorderLayout(18, 18));
+        content.setOpaque(false);
+        content.add(buildForm(), BorderLayout.NORTH);
+        content.add(buildTable(), BorderLayout.CENTER);
+        return content;
+    }
+
+    private JPanel buildForm() {
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setOpaque(false);
+        wrapper.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(226, 232, 240)),
+                BorderFactory.createEmptyBorder(18, 18, 18, 18)));
+
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        txtNombre = new ModernTextField("Nombre completo");
+        txtCedula = new ModernTextField("Cedula");
+        txtFechaIngreso = new ModernTextField("YYYY-MM-DD");
+        txtFechaIngreso.setText(LocalDate.now().toString());
+        txtSalarioBase = new ModernTextField("Salario base");
+        txtBono = new ModernTextField("Bono");
+        txtHoras = new ModernTextField("Horas trabajadas");
+        txtValorHora = new ModernTextField("Valor por hora");
+        cmbTipoEmpleado = new JComboBox<TipoEmpleado>(TipoEmpleado.values());
+        cmbDepartamento = new JComboBox<Object>();
+        cmbTipoEmpleado.addActionListener(e -> updateFieldState());
+
+        addField(form, gbc, 0, "Tipo", cmbTipoEmpleado);
+        addField(form, gbc, 1, "Nombre", txtNombre);
+        addField(form, gbc, 2, "Cedula", txtCedula);
+        addField(form, gbc, 3, "Fecha ingreso", txtFechaIngreso);
+        addField(form, gbc, 4, "Departamento", cmbDepartamento);
+        addField(form, gbc, 5, "Salario base", txtSalarioBase);
+        addField(form, gbc, 6, "Bono", txtBono);
+        addField(form, gbc, 7, "Horas", txtHoras);
+        addField(form, gbc, 8, "Valor hora", txtValorHora);
+
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        actions.setOpaque(false);
         Button btnGuardar = new Button("GUARDAR", true);
-        
+        Button btnActualizar = new Button("ACTUALIZAR", false);
+        Button btnEliminar = new Button("ELIMINAR", false);
+        Button btnLimpiar = new Button("LIMPIAR", false);
+
         btnGuardar.addActionListener(e -> guardarEmpleado());
-        btnLimpiar.addActionListener(e -> limpiarCampos());
-        
-        buttonPanel.add(btnLimpiar);
-        buttonPanel.add(btnGuardar);
-        add(buttonPanel, gbc);
-        
-        // === TABLA ===
-        gbc.gridy = 7;
-        gbc.insets = new Insets(20, 20, 20, 20);
-        
-        // ✅ USAR EL SERVICIO PARA OBTENER CANTIDAD
-        lblTituloTabla = new JLabel("Lista de Empleados (" + empleadoService.getCantidad() + ")");
-        lblTituloTabla.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        lblTituloTabla.setForeground(new Color(15, 23, 42));
-        gbc.gridx = 0; gbc.gridwidth = 2;
-        add(lblTituloTabla, gbc);
-        
-        gbc.gridy = 8;
-        String[] columnas = {"Tipo", "Nombre", "Cédula", "Salario/Base", "Estado"};
+        btnActualizar.addActionListener(e -> actualizarEmpleado());
+        btnEliminar.addActionListener(e -> eliminarEmpleado());
+        btnLimpiar.addActionListener(e -> limpiarFormulario());
+
+        actions.add(btnLimpiar);
+        actions.add(btnEliminar);
+        actions.add(btnActualizar);
+        actions.add(btnGuardar);
+
+        wrapper.add(form, BorderLayout.CENTER);
+        wrapper.add(actions, BorderLayout.SOUTH);
+        return wrapper;
+    }
+
+    private JScrollPane buildTable() {
+        String[] columnas = {
+            "ID", "Tipo", "Nombre", "Cedula", "Ingreso", "Pago", "Departamento"
+        };
         tableModel = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
+
         tableEmpleados = new JTable(tableModel);
-        tableEmpleados.setBackground(Color.WHITE);
-        tableEmpleados.setForeground(new Color(15, 23, 42));
-        tableEmpleados.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        tableEmpleados.setRowHeight(35);
-        tableEmpleados.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
-        tableEmpleados.getTableHeader().setBackground(new Color(241, 245, 249));
-        tableEmpleados.getTableHeader().setForeground(new Color(100, 116, 139));
-        
-        // Centrar contenido
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        for (int i = 0; i < columnas.length; i++) {
-            tableEmpleados.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
-        
-        JScrollPane scroll = new JScrollPane(tableEmpleados);
-        scroll.setBorder(null);
-        add(scroll, gbc);
-        
-        // ✅ CARGAR DATOS INICIALES DEL SERVICIO
-        actualizarTabla();
+        tableEmpleados.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tableEmpleados.setRowHeight(30);
+        tableEmpleados.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) {
+                    cargarSeleccion();
+                }
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(tableEmpleados);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Listado de empleados"));
+        scrollPane.setPreferredSize(new Dimension(900, 320));
+        return scrollPane;
     }
-    
-    // ✅ MÉTODO QUE USA EL SERVICIO (CONEXIÓN FUNCIONAL)
+
+    private void addField(JPanel panel, GridBagConstraints gbc, int row, String labelText, java.awt.Component component) {
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0;
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        label.setForeground(new Color(71, 85, 105));
+        panel.add(label, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        panel.add(component, gbc);
+    }
+
     private void guardarEmpleado() {
         try {
-            String nombre = txtNombre.getText().trim();
-            String cedula = txtCedula.getText().trim();
-            
-            if (nombre.isEmpty() || cedula.isEmpty()) {
-                JOptionPane.showMessageDialog(this, 
-                    "Complete nombre y cédula", 
-                    "Error", 
-                    JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            
-            int tipo = rbPermanente.isSelected() ? 1 : 2;
-            double salario = 0;
-            int horas = 0;
-            double valorHora = 0;
-            
-            if (tipo == 1) {
-                try {
-                    salario = Double.parseDouble(txtSalario.getText().trim());
-                } catch (NumberFormatException e) {
-                    salario = 12800;
-                }
-            } else {
-                try {
-                    horas = Integer.parseInt(txtHoras.getText().trim());
-                } catch (NumberFormatException e) {
-                    horas = 14;
-                }
-                valorHora = 300;
-            }
-            
-            // ✅ LLAMAR AL SERVICIO (CONEXIÓN AQUÍ)
             Empleado empleado = empleadoService.crearEmpleado(
-                nombre, cedula, tipo, salario, horas, valorHora
-            );
-            
-            // ✅ ACTUALIZAR VISTA DESDE EL SERVICIO
-            actualizarTabla();
-            limpiarCampos();
-            
-            JOptionPane.showMessageDialog(this, 
-                "Empleado creado:\n" + empleado.getNombre() + "\n" +
-                "Cédula: " + empleado.getCedula() + "\n" +
-                "Total: " + empleadoService.getCantidad(),
-                "Éxito", 
-                JOptionPane.INFORMATION_MESSAGE);
-            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                "❌ Error: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+                    (TipoEmpleado) cmbTipoEmpleado.getSelectedItem(),
+                    txtNombre.getText().trim(),
+                    txtCedula.getText().trim(),
+                    parseFecha(txtFechaIngreso.getText().trim()),
+                    parseDouble(txtSalarioBase.getText().trim(), "El salario base es invalido."),
+                    parseDouble(txtBono.getText().trim(), "El bono es invalido."),
+                    parseInt(txtHoras.getText().trim(), "Las horas son invalidas."),
+                    parseDouble(txtValorHora.getText().trim(), "El valor por hora es invalido."));
+            syncDepartamento(empleado.getIdEmpleado());
+            postAction("Empleado creado correctamente.");
+        } catch (RuntimeException ex) {
+            showError(ex.getMessage());
         }
     }
-    
-    // ✅ ACTUALIZAR TABLA DESDE EL ARRAYLIST DEL SERVICIO
-    private void actualizarTabla() {
-        tableModel.setRowCount(0);
-        
-        // ✅ OBTENER LISTA DEL SERVICIO
-        List<Empleado> lista = empleadoService.obtenerTodos();
-        
-        for (Empleado emp : lista) {
-            Object[] row = new Object[5];
-            
-            if (emp instanceof EmpleadoPermanente) {
-                EmpleadoPermanente perm = (EmpleadoPermanente) emp;
-                row[0] = "Permanente";
-                row[1] = emp.getNombre();
-                row[2] = emp.getCedula();
-                row[3] = "$" + perm.getSalarioBase();
-                row[4] = "Activo";
-            } else {
-                EmpleadoTemporal temp = (EmpleadoTemporal) emp;
-                row[0] = "Temporal";
-                row[1] = emp.getNombre();
-                row[2] = emp.getCedula();
-                row[3] = temp.getHorasTrabajadas() + " hrs";
-                row[4] = "Temporal";
-            }
-            
-            tableModel.addRow(row);
+
+    private void actualizarEmpleado() {
+        if (empleadoSeleccionadoId == null) {
+            showError("Selecciona un empleado para actualizar.");
+            return;
         }
-        
-        // ✅ ACTUALIZAR TÍTULO CON CANTIDAD DEL SERVICIO
-        lblTituloTabla.setText("📋 Employee List (" + empleadoService.getCantidad() + ")");
+
+        try {
+            empleadoService.actualizarEmpleado(
+                    empleadoSeleccionadoId,
+                    (TipoEmpleado) cmbTipoEmpleado.getSelectedItem(),
+                    txtNombre.getText().trim(),
+                    txtCedula.getText().trim(),
+                    parseFecha(txtFechaIngreso.getText().trim()),
+                    parseDouble(txtSalarioBase.getText().trim(), "El salario base es invalido."),
+                    parseDouble(txtBono.getText().trim(), "El bono es invalido."),
+                    parseInt(txtHoras.getText().trim(), "Las horas son invalidas."),
+                    parseDouble(txtValorHora.getText().trim(), "El valor por hora es invalido."));
+            syncDepartamento(empleadoSeleccionadoId);
+            postAction("Empleado actualizado correctamente.");
+        } catch (RuntimeException ex) {
+            showError(ex.getMessage());
+        }
     }
-    
-    private void limpiarCampos() {
+
+    private void eliminarEmpleado() {
+        if (empleadoSeleccionadoId == null) {
+            showError("Selecciona un empleado para eliminar.");
+            return;
+        }
+        try {
+            empleadoService.eliminarEmpleado(empleadoSeleccionadoId);
+            postAction("Empleado eliminado correctamente.");
+        } catch (RuntimeException ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void syncDepartamento(String idEmpleado) {
+        Object selected = cmbDepartamento.getSelectedItem();
+        if (selected instanceof Departamento) {
+            empleadoService.asignarDepartamento(idEmpleado, ((Departamento) selected).getId());
+        } else {
+            empleadoService.desasignarDepartamento(idEmpleado);
+        }
+    }
+
+    private void cargarSeleccion() {
+        int selectedRow = tableEmpleados.getSelectedRow();
+        if (selectedRow < 0) {
+            return;
+        }
+        empleadoSeleccionadoId = tableModel.getValueAt(selectedRow, 0).toString();
+        Empleado empleado = empleadoService.obtenerPorId(empleadoSeleccionadoId);
+
+        txtNombre.setText(empleado.getNombre());
+        txtCedula.setText(empleado.getCedula());
+        txtFechaIngreso.setText(empleado.getFechaIngreso().toString());
+        cmbTipoEmpleado.setSelectedItem(empleado.getTipoEmpleado());
+        if (empleado instanceof EmpleadoPermanente) {
+            EmpleadoPermanente permanente = (EmpleadoPermanente) empleado;
+            txtSalarioBase.setText(String.valueOf(permanente.getSalarioBase()));
+            txtBono.setText(String.valueOf(permanente.getBono()));
+            txtHoras.setText("0");
+            txtValorHora.setText("0");
+        } else if (empleado instanceof EmpleadoTemporal) {
+            EmpleadoTemporal temporal = (EmpleadoTemporal) empleado;
+            txtSalarioBase.setText("0");
+            txtBono.setText("0");
+            txtHoras.setText(String.valueOf(temporal.getHorasTrabajadas()));
+            txtValorHora.setText(String.valueOf(temporal.getValorHora()));
+        }
+
+        if (empleado.getDepartamento() != null) {
+            cmbDepartamento.setSelectedItem(empleado.getDepartamento());
+        } else {
+            cmbDepartamento.setSelectedIndex(0);
+        }
+        updateFieldState();
+    }
+
+    private void updateFieldState() {
+        TipoEmpleado tipoEmpleado = (TipoEmpleado) cmbTipoEmpleado.getSelectedItem();
+        boolean esPermanente = tipoEmpleado == TipoEmpleado.PERMANENTE;
+        txtSalarioBase.setEnabled(esPermanente);
+        txtBono.setEnabled(esPermanente);
+        txtHoras.setEnabled(!esPermanente);
+        txtValorHora.setEnabled(!esPermanente);
+        if (esPermanente) {
+            txtHoras.setText("0");
+            txtValorHora.setText("0");
+        } else {
+            txtSalarioBase.setText("0");
+            txtBono.setText("0");
+        }
+    }
+
+    private void limpiarFormulario() {
+        empleadoSeleccionadoId = null;
         txtNombre.setText("");
         txtCedula.setText("");
-        txtSalario.setText("");
-        txtHoras.setText("");
-        rbPermanente.setSelected(true);
-        txtNombre.requestFocus();
+        txtFechaIngreso.setText(LocalDate.now().toString());
+        txtSalarioBase.setText("0");
+        txtBono.setText("0");
+        txtHoras.setText("0");
+        txtValorHora.setText("0");
+        cmbTipoEmpleado.setSelectedItem(TipoEmpleado.PERMANENTE);
+        if (cmbDepartamento.getItemCount() > 0) {
+            cmbDepartamento.setSelectedIndex(0);
+        }
+        tableEmpleados.clearSelection();
+        updateFieldState();
     }
-    
-    // ✅ GETTER PARA ACCEDER AL SERVICIO DESDE FUERA (OPCIONAL)
-    public EmpleadoService getEmpleadoService() {
-        return empleadoService;
+
+    private void postAction(String message) {
+        refreshCallback.run();
+        limpiarFormulario();
+        JOptionPane.showMessageDialog(this, message, "CompuWork", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private LocalDate parseFecha(String value) {
+        try {
+            return LocalDate.parse(value);
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("La fecha debe estar en formato YYYY-MM-DD.");
+        }
+    }
+
+    private double parseDouble(String value, String message) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    private int parseInt(String value, String message) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    @Override
+    public void refreshData() {
+        refreshDepartamentos();
+        refreshTabla();
+        updateFieldState();
+    }
+
+    private void refreshDepartamentos() {
+        Object selected = cmbDepartamento == null ? null : cmbDepartamento.getSelectedItem();
+        cmbDepartamento.removeAllItems();
+        cmbDepartamento.addItem("Sin departamento");
+        List<Departamento> departamentos = departamentoService.obtenerTodos();
+        for (Departamento departamento : departamentos) {
+            cmbDepartamento.addItem(departamento);
+        }
+        if (selected != null) {
+            cmbDepartamento.setSelectedItem(selected);
+        }
+    }
+
+    private void refreshTabla() {
+        tableModel.setRowCount(0);
+        List<Empleado> empleados = empleadoService.obtenerTodos();
+        for (Empleado empleado : empleados) {
+            tableModel.addRow(new Object[]{
+                empleado.getIdEmpleado(),
+                empleado.getTipoEmpleado(),
+                empleado.getNombre(),
+                empleado.getCedula(),
+                empleado.getFechaIngreso(),
+                empleado.calcularPago(),
+                empleado.getDepartamento() == null ? "Sin departamento" : empleado.getDepartamento().getNombre()
+            });
+        }
+        lblResumen.setText(empleados.size() + " empleados registrados");
     }
 }

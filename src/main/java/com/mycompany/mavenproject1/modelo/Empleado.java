@@ -1,35 +1,42 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.mavenproject1.modelo;
 
+import com.mycompany.mavenproject1.excepcion.ValidacionException;
 import java.time.LocalDate;
+import java.util.Objects;
 
-/**
- *
- * @author USUARIO
- */
-public class Empleado {
-
+public abstract class Empleado {
+    private final String idEmpleado;
     private String nombre;
     private String cedula;
-    private LocalDate fechaDeIngreso;
-    private double salario;
-    private String idEmpleado;
+    private LocalDate fechaIngreso;
     private Departamento departamento;
 
-    public Empleado(String nombre) {
-        this.nombre = nombre;
+    protected Empleado(String idEmpleado, String nombre, String cedula, LocalDate fechaIngreso) {
+        if (idEmpleado == null || idEmpleado.trim().isEmpty()) {
+            throw new ValidacionException("El id del empleado es obligatorio.");
+        }
+        this.idEmpleado = idEmpleado;
+        actualizarDatosBasicos(nombre, cedula, fechaIngreso);
     }
 
-    public Empleado(String nombre, String cedula, LocalDate fechaDeIngreso, double salario, String idEmpleado) {
-        this.nombre = nombre;
-        this.cedula = cedula;
-        this.fechaDeIngreso = fechaDeIngreso;
-        this.salario = salario;
-        this.idEmpleado = idEmpleado;
-        
+    public final void actualizarDatosBasicos(String nombre, String cedula, LocalDate fechaIngreso) {
+        validarTexto(nombre, "El nombre es obligatorio.");
+        validarTexto(cedula, "La cedula es obligatoria.");
+        if (fechaIngreso == null) {
+            throw new ValidacionException("La fecha de ingreso es obligatoria.");
+        }
+
+        this.nombre = nombre.trim();
+        this.cedula = cedula.trim();
+        this.fechaIngreso = fechaIngreso;
+    }
+
+    public abstract double calcularPago();
+
+    public abstract TipoEmpleado getTipoEmpleado();
+
+    public String getIdEmpleado() {
+        return idEmpleado;
     }
 
     public String getNombre() {
@@ -40,44 +47,43 @@ public class Empleado {
         return cedula;
     }
 
-    public LocalDate getFechaDeIngreso() {
-        return fechaDeIngreso;
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
     }
 
-    public double getSalario() {
-        return salario;
-    }
-
-    public String getIdEmpleado() {
-        return idEmpleado;
-    }
-    
     public Departamento getDepartamento() {
         return departamento;
     }
-    
-    public void setNombre(String nombre){
-        this.nombre = nombre;
-    }
-    
-    public void getCedula(String cedula) {
-        this.cedula = cedula;
-    }
-    
-   public void setFechaDeIngreso(LocalDate fechaDeIngreso) {
-        this.fechaDeIngreso = fechaDeIngreso;
-    }
 
-    public void setSalario(double salario) {
-        this.salario = salario;
-    }
-
-    public void setIdEmpleado(String idEmpleado) {
-        this.idEmpleado = idEmpleado;
-    }
-
-    public void setDepartamento(Departamento departamento) {
+    void asignarDepartamentoInterno(Departamento departamento) {
         this.departamento = departamento;
-    } 
+    }
 
+    private void validarTexto(String value, String message) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new ValidacionException(message);
+        }
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof Empleado)) {
+            return false;
+        }
+        Empleado empleado = (Empleado) object;
+        return Objects.equals(idEmpleado, empleado.idEmpleado);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idEmpleado);
+    }
+
+    @Override
+    public String toString() {
+        return nombre + " (" + cedula + ")";
+    }
 }

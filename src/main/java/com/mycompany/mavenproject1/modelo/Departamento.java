@@ -1,61 +1,88 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.mavenproject1.modelo;
 
-/**
- *
- * @author USUARIO
- */
+import com.mycompany.mavenproject1.excepcion.AsignacionInvalidaException;
+import com.mycompany.mavenproject1.excepcion.ValidacionException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 public class Departamento {
-    
+    private final String id;
     private String nombre;
     private String descripcion;
-    private Double presupuestoasignado;
-    private int iddepartamento;
-    
+    private double presupuestoAsignado;
+    private final Set<Empleado> empleados;
 
-    public Departamento() {
+    public Departamento(String id, String nombre, String descripcion, double presupuestoAsignado) {
+        if (id == null || id.trim().isEmpty()) {
+            throw new ValidacionException("El id del departamento es obligatorio.");
+        }
+        this.id = id;
+        this.empleados = new LinkedHashSet<Empleado>();
+        actualizarDatos(nombre, descripcion, presupuestoAsignado);
     }
 
-    public Departamento(String nombre, String descripcion, double presupuestoasignado, int iddepartamento) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.presupuestoasignado = presupuestoasignado;
-        this.iddepartamento =iddepartamento;
+    public final void actualizarDatos(String nombre, String descripcion, double presupuestoAsignado) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new ValidacionException("El nombre del departamento es obligatorio.");
+        }
+        if (presupuestoAsignado < 0) {
+            throw new ValidacionException("El presupuesto asignado no puede ser negativo.");
+        }
+        this.nombre = nombre.trim();
+        this.descripcion = descripcion == null ? "" : descripcion.trim();
+        this.presupuestoAsignado = presupuestoAsignado;
+    }
+
+    public void agregarEmpleado(Empleado empleado) {
+        if (empleado == null) {
+            throw new ValidacionException("El empleado es obligatorio.");
+        }
+        Departamento departamentoActual = empleado.getDepartamento();
+        if (departamentoActual != null && !id.equals(departamentoActual.getId())) {
+            throw new AsignacionInvalidaException("El empleado ya pertenece a otro departamento.");
+        }
+        empleados.add(empleado);
+        empleado.asignarDepartamentoInterno(this);
+    }
+
+    public void removerEmpleado(Empleado empleado) {
+        if (empleado == null) {
+            throw new ValidacionException("El empleado es obligatorio.");
+        }
+        if (empleados.remove(empleado) && empleado.getDepartamento() == this) {
+            empleado.asignarDepartamentoInterno(null);
+        }
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getdescripcion() {
+    public String getDescripcion() {
         return descripcion;
     }
 
-    public void setdescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public double getPresupuestoAsignado() {
+        return presupuestoAsignado;
     }
 
-    public double getpresupuestoasignado() {
-        return presupuestoasignado;
+    public List<Empleado> getEmpleados() {
+        return Collections.unmodifiableList(new ArrayList<Empleado>(empleados));
     }
 
-    public void setpresupuestoasignado(double presupuestoasignado) {
-        this.presupuestoasignado = presupuestoasignado;
-    }
-    
-    public int getiddepartamento() {
-        return iddepartamento;
+    public int getCantidadEmpleados() {
+        return empleados.size();
     }
 
-    public void setiddepartamento(int iddepartamento) {
-        this.iddepartamento = iddepartamento;
+    @Override
+    public String toString() {
+        return nombre;
     }
-
 }
