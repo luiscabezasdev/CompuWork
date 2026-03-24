@@ -3,6 +3,7 @@
 CompuWork es un MVP academico en Java + Swing para gestionar empleados, departamentos y reportes de desempeno. El proyecto aplica encapsulamiento, herencia, polimorfismo, manejo de excepciones, pruebas unitarias y una separacion simple por capas.
 
 ## Alcance implementado
+
 - CRUD basico de empleados permanentes y temporales.
 - CRUD basico de departamentos.
 - Asignacion y desasignacion de empleados a departamentos.
@@ -12,12 +13,14 @@ CompuWork es un MVP academico en Java + Swing para gestionar empleados, departam
 - Pruebas unitarias con JUnit 5.
 
 ## Arquitectura
+
 - **Dominio**: `Empleado`, `EmpleadoPermanente`, `EmpleadoTemporal`, `Departamento`, `ReporteDesempeno` y enums de apoyo.
 - **Servicios**: `EmpleadoService`, `DepartamentoService`, `ReporteDesempenoService`.
 - **UI**: `MainFrame` y paneles de empleados, departamentos y reportes.
 - **Excepciones**: validaciones y errores de negocio manejados con excepciones personalizadas.
 
 ## Decisiones de diseno
+
 - `Empleado` es abstracta y resuelve el pago por polimorfismo mediante `calcularPago()`.
 - `Departamento` mantiene la relacion bidireccional con `Empleado`.
 - `ReporteDesempeno` usa metricas `productividad`, `puntualidad` y `calidad` en rango de 0 a 100.
@@ -25,6 +28,7 @@ CompuWork es un MVP academico en Java + Swing para gestionar empleados, departam
 - Los requerimientos empresariales amplios como seguridad avanzada, 24/7, compatibilidad web/movil y persistencia real quedan documentados como evolucion futura.
 
 ## Estructura principal
+
 - `src/main/java/com/mycompany/mavenproject1/modelo`
 - `src/main/java/com/mycompany/mavenproject1/servicio`
 - `src/main/java/com/mycompany/mavenproject1/excepcion`
@@ -33,6 +37,7 @@ CompuWork es un MVP academico en Java + Swing para gestionar empleados, departam
 - `docs/uml-clases.md`
 
 ## Ejecucion
+
 ```bash
 mvn clean package
 mvn exec:java
@@ -41,11 +46,13 @@ mvn exec:java
 Al iniciar la app puedes elegir consola o interfaz grafica.
 
 ## Pruebas
+
 ```bash
 mvn test
 ```
 
 Las pruebas cubren:
+
 - calculo polimorfico de pago,
 - validacion de cedulas duplicadas,
 - asignacion de departamentos,
@@ -53,16 +60,12 @@ Las pruebas cubren:
 - generacion de reportes individuales y departamentales.
 
 ## Documentacion UML
+
 El diagrama de clases se encuentra en `docs/uml-clases.md` usando Mermaid para que puedas abrirlo en GitHub o adaptarlo a una imagen si la entrega lo exige.
 
 ## Requerimientos no funcionales tratados como futura evolucion
+
 - **Seguridad**: autenticacion, autorizacion y cifrado no se implementan en este MVP.
 - **Escalabilidad**: actualmente la persistencia es en memoria; una siguiente fase deberia incorporar repositorios y base de datos.
 - **Disponibilidad**: al ser una app desktop local, no aplica un objetivo real de 24/7.
 - **Compatibilidad web/movil**: se mantiene Swing para cumplir el MVP academico con el menor riesgo.
-
-## Entrega del repositorio
-Para la entrega final aun debes:
-1. Crear o vincular el repositorio remoto.
-2. Subir el proyecto limpio sin artefactos de `target/`.
-3. Adjuntar en el README o en la entrega el enlace del repositorio y capturas de la interfaz.
